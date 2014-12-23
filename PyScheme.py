@@ -9,31 +9,27 @@ Description: In this project I attempt to write an implementation of a subset
 of the Scheme Programming Language in Python.
 """
 
-# initially we will ignore strings and comments and will get just the core
-# functionality working
+from Classifier import *
 
-# we'll need functions that perform basic housekeeping
-# (removing all the parens for processing etc.)
-
-def tokenize(string):
-    
-    """
-    Converts a string into a list of tokens.
-    """
-    
-    # add a space to parens so that they can be split easily
-    string = string.replace('(', ' ( ')
-    string = string.replace(')', ' ) ')
-    
-    return string.split()
 
 # to implement the environment model of evaluation in Scheme, 
 # we need environments. 
-class Env(dict):
+class Env(object):
+    
     """
     An environment is simply a dict of variable-value pairs, and some
     predefined mappings.
     """
+    
+    def __init__(self, frame = {}, enclosingEnvironment = None):
+        self.frame = frame
+        self.enclosingEnvironment = enclosingEnvironment
+        
+    def lookup(self, variable):
+        if variable in self.frame.keys():
+            return self.frame[variable]
+        else:
+            self.enclosingEnvironment.lookup(variable)
        
 def eval(exp, env):
     
