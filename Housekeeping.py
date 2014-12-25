@@ -42,15 +42,15 @@ def tokenize(string):
 def parse(program):
     
     """
-    Calls tokenize and readFromTokens, cleans up the program for processing 
+    Calls tokenize and read_from_tokens, cleans up the program for processing 
     as mentioned above.
     """
     
     # assumes the programmer to be correct
     
-    return readFromTokens(tokenize(program))
+    return read_from_tokens(tokenize(program))
     
-def readFromTokens(tokenList):    
+def read_from_tokens(token_list):    
     
     """
     Identifies individual expressions from a list of tokens and packages
@@ -60,23 +60,23 @@ def readFromTokens(tokenList):
     # this is implemented as a separate function for the recursion to work
     # properly
     
-    firstToken = tokenList.pop(0)
+    first_token = token_list.pop(0)
     
-    if firstToken == '(':
+    if first_token == '(':
         # new expression in place
         # so initialize new list to package it
-        newExpression = []
-        while tokenList[0] != ')':
+        new_expression = []
+        while token_list[0] != ')':
             # keep appending values to the new expression list
-            newExpression.append(readFromTokens(tokenList))
+            new_expression.append(read_from_tokens(token_list))
         # like Mr. Norvig said, remove  the ')'
-        tokenList.pop(0)
-        return newExpression
+        token_list.pop(0)
+        return new_expression
     else:
         # token is not the start of a new expression
         # i.e. already in its smallest form
         # so simply return
-        return firstToken
+        return first_token
     
     
     

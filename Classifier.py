@@ -11,13 +11,13 @@ from Housekeeping import *
 
 # The functions are written in such a way that the name identifies the
 # purpose of the function.
-# For e.g. isSelfEvaluating(item) will return the answer to the question
+# For e.g. is_self_evaluating(item) will return the answer to the question
 # "Is the item self-evaluating?", i.e.
 # True if it is, False if it is not.
 
-# exp stands for expression unless otherwise noted
+# exp stands for "expression" unless otherwise noted
 
-def isSelfEvaluating(exp):
+def is_self_evaluating(exp):
     
     """
     Returns true if the expression is a number (integer or a float), 
@@ -25,24 +25,24 @@ def isSelfEvaluating(exp):
     """
     
     try:
-        tempfloat = float(exp)
+        temp_float = float(exp)
         return True
     except:
         return False
         
-#def isVariable(exp):
+#def is_variable(exp):
 #    
 #    """
 #    Checks if an item is a variable or not.
 #    For now, anything that is not a number(float or double) is a variable.
 #    """
 #    
-#    return not isSelfEvaluating(exp)
+#    return not is_self_evaluating(exp)
 
 # to ease checking predicates, we will define a template function
 # which will check if the list begins with a particular keyword.
 
-def genericKeywordCheck(exp, keyword):
+def generic_keyword_check(exp, keyword):
     
     """
     Returns true if exp is a list whose first element is the string in
@@ -54,60 +54,60 @@ def genericKeywordCheck(exp, keyword):
     else:
         return False
         
-def isAssignment(exp):
+def is_assignment(exp):
     
     """
     Checks if an expression is an assignment statement
     (one that uses 'set!')
     """
     
-    return genericKeywordCheck(exp, 'set!')
+    return generic_keyword_check(exp, 'set!')
         
-def isDefinition(exp):
+def is_definition(exp):
     
     """
     Checks if an expression is a definition.
     """
     
-    return genericKeywordCheck(exp, 'define')
+    return generic_keyword_check(exp, 'define')
         
-def isIfStatement(exp):
+def is_if_statement(exp):
     
     """
     Checks if the expression is an if statement
     """
     
-    return genericKeywordCheck(exp, 'if')
+    return generic_keyword_check(exp, 'if')
     
-def isLambda(exp):
+def is_lambda(exp):
     
     """
     Checks if the expression is a lambda statement
     """
     
-    return genericKeywordCheck(exp, 'lambda')
+    return generic_keyword_check(exp, 'lambda')
     
     
-def isBegin(exp):
+def is_begin(exp):
     
     """
     Checks if the expression is a begin statement
     """
     
-    return genericKeywordCheck(exp, 'begin')
+    return generic_keyword_check(exp, 'begin')
     
 
 # unfortunately Peter Norvig's implementation does not support
 # the cond statement    
-def isCond(exp):
+def is_cond(exp):
     
     """
     Checks if the expression is a begin statement
     """
     
-    return genericKeywordCheck(exp, 'cond')
+    return generic_keyword_check(exp, 'cond')
     
-def isApplication(exp):
+def is_application(exp):
     
     """
     Checks if the expression is an application.
