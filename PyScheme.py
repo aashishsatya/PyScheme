@@ -106,7 +106,28 @@ def apply_operators(op, arguments_as_string):
     for argument in remaining_arguments:
         running_value = current_op(running_value, argument)
     
-    return running_value    
+    return running_value
+    
+def evaluate_arguments(list_of_args, env):
+    
+    """
+    Evaluates arguments for function calls or operators.
+    Input: A series of arguments as a list and an Environment env
+    Returns: A list of arguments after evaluation.
+    """
+    
+    # dereference variables
+    args = []
+    for var in list_of_args:
+        try:
+            value = eval(var, env)
+            args.append(value)
+        except:
+            # directly a number represented as string
+            args.append(var)
+    return args
+    
+    
     
 def eval(exp, env = global_env):
     
@@ -123,7 +144,7 @@ def eval(exp, env = global_env):
         variable = exp[1]
         new_value = exp[2]
         env.update(variable, new_value)
-        return
+        return ';Value: ' + variable
         
     elif is_definition(exp):        
         # ['define', <variable or token>, <body>]
@@ -134,10 +155,10 @@ def eval(exp, env = global_env):
             body = exp[2]
             lambda_expression = eval(['lambda', variable[1:], body])
             env.add(variable[0], lambda_expression)
-            return
+            return ';Value:' + variable[0]
         body = eval(exp[2], env)
         env.add(variable, body)
-        return
+        return ';Value:' + variable
         
     elif is_if_statement(exp):        
         # ['if', <condition>, <consequent>, <alternative>]        
@@ -155,6 +176,25 @@ def eval(exp, env = global_env):
         params = exp[1]
         body = exp[2]
         return Procedure(params, body)
+        
+    elif is_begin(exp):
+        # ['begin', <list of things to do>]
+        # all we need to do is evaluate the arguments
+        args = evaluate_arguments(exp[1:], env)
+        return ';Value:', args[-1]
+        
+    elif is_cond(exp):
+        # '['cond',[[<condition1>, <consequent1>], [<condition2, conseq2]]...]
+        # condition - consequent pairs
+        # the zero index is used because using [1:] gives a single element
+        # list with the pairs that we need
+        cond_conseq_pairs = exp[1:][0] 
+        for cond_cons_pair in cond_conseq_pairs:
+            # [<condition>, <consequent>]
+            condition = cond_cons_pair[0]
+            if condition == 'else' or eval(condition, env):
+                consequent = cond_cons_pair[1]
+                return eval(consequent, env)        
     
     elif len(exp) == 1:
         # may be a variable, check it
@@ -166,25 +206,14 @@ def eval(exp, env = global_env):
         
     elif exp[0] in ['+', '-', '*', '/', '=']:
         op = exp[0]
-        # dereference variables
-        args = []
-        for var in exp[1:]:
-            try:
-                print 'try executed, var =', var
-                value = eval(var, env)
-                print 'value =', value
-                args.append(value)
-            except:
-                print 'except entered'
-                # directly a number represented as string
-                args.append(var)
-        print 'args = ', args
-        return apply_operators(op, args)  
+        # evaluate arguments before applying operators        
+        return apply_operators(op, evaluate_arguments(exp[1:], env))  
               
     # item is a procedure
     # [<procedure name>, arguments]
     procedure_name = exp[0]
-    args = exp[1:]
+    # evaluate arguments as before
+    args = evaluate_arguments(exp[1:], env)
     required_procedure_obj = env.lookup(procedure_name)
     return required_procedure_obj.call(args, env)
     
