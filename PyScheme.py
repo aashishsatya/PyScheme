@@ -126,8 +126,10 @@ def evaluate_arguments(list_of_args, env):
             # directly a number represented as string
             args.append(var)
     return args
-    
-    
+
+
+# functions use setters and getters to implement data abstraction
+# if you need details of the implementation see Housekeeping.py
     
 def eval(exp, env = global_env):
     
@@ -140,63 +142,57 @@ def eval(exp, env = global_env):
         return exp
     
     elif is_assignment(exp):        
-        # ['set!', <variable name>, <new value>]
-        variable = exp[1]
-        new_value = exp[2]
+        variable = get_assignment_variable(exp)
+        new_value = get_assignment_new_value(exp)
         env.update(variable, new_value)
         return ';Value: ' + variable
         
     elif is_definition(exp):        
-        # ['define', <variable or token>, <body>]
-        variable = exp[1]
-        if type(variable) == list:
+        definition_name = get_definition_name(exp)
+        if is_definition_function(definition_name):
             # means define has been used to define a function
             # send straight to lambda
-            body = exp[2]
-            lambda_expression = eval(['lambda', variable[1:], body])
-            env.add(variable[0], lambda_expression)
-            return ';Value:' + variable[0]
-        body = eval(exp[2], env)
-        env.add(variable, body)
-        return ';Value:' + variable
+            body = get_definition_body(exp)
+            lambda_expression = eval(make_exp('lambda',
+                                              get_definition_parameters(definition_name),
+                                              body))
+            env.add(get_definition_function_name(definition_name), lambda_expression)
+            return ';Value: ' + get_definition_function_name(definition_name)
+        body = eval(get_definition_body(exp), env)
+        env.add(definition_name, body)
+        return ';Value: ' + definition_name
         
     elif is_if_statement(exp):        
-        # ['if', <condition>, <consequent>, <alternative>]        
-        condition = exp[1]
-        consequent = exp[2]
+        condition = get_condition(exp)
+        consequent = get_consequent(exp)
         # alternative is a must
-        alternative = exp[3]
+        alternative = get_alternative(exp)
         if eval(condition, env) == True:
             return eval(consequent, env)
-        elif eval(condition, env) == False:
+        else:
             return eval(alternative, env)
             
     elif is_lambda(exp):
-        # ['lambda', [<parameters>], <body>]
-        params = exp[1]
-        body = exp[2]
+        params = get_lambda_parameters(exp)
+        body = get_lambda_body(exp)
         return Procedure(params, body)
         
     elif is_begin(exp):
         # ['begin', <list of things to do>]
         # all we need to do is evaluate the arguments
-        args = evaluate_arguments(exp[1:], env)
-        return ';Value:', args[-1]
+        args = evaluate_arguments(get_begin_statements(exp), env)
+        return ';Value: ' + args[-1]
         
     elif is_cond(exp):
-        # '['cond',[[<condition1>, <consequent1>], [<condition2, conseq2]]...]
         # condition - consequent pairs
-        # the zero index is used because using [1:] gives a single element
-        # list with the pairs that we need
-        cond_conseq_pairs = exp[1:][0] 
+        cond_conseq_pairs = get_cond_conseq_pairs(exp) 
         for cond_cons_pair in cond_conseq_pairs:
-            # [<condition>, <consequent>]
-            condition = cond_cons_pair[0]
+            condition = get_condition_from_pair(cond_cons_pair)
             if condition == 'else' or eval(condition, env):
-                consequent = cond_cons_pair[1]
+                consequent = get_consequent_from_pair(cond_cons_pair)
                 return eval(consequent, env)        
     
-    elif len(exp) == 1:
+    elif is_variable(exp):
         # may be a variable, check it
         try:
             value = env.lookup(exp)
@@ -204,16 +200,15 @@ def eval(exp, env = global_env):
         except:
             return exp
         
-    elif exp[0] in ['+', '-', '*', '/', '=']:
-        op = exp[0]
+    elif get_name(exp) in ['+', '-', '*', '/', '=']:
+        op = get_name(exp)
         # evaluate arguments before applying operators        
-        return apply_operators(op, evaluate_arguments(exp[1:], env))  
+        return apply_operators(op, evaluate_arguments(get_arguments(exp), env))  
               
     # item is a procedure
-    # [<procedure name>, arguments]
-    procedure_name = exp[0]
+    procedure_name = get_name(exp)
     # evaluate arguments as before
-    args = evaluate_arguments(exp[1:], env)
+    args = evaluate_arguments(get_arguments(exp), env)
     required_procedure_obj = env.lookup(procedure_name)
     return required_procedure_obj.call(args, env)
     
