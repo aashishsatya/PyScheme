@@ -30,14 +30,14 @@ def is_self_evaluating(exp):
     except:
         return False
         
-#def is_variable(exp):
-#    
-#    """
-#    Checks if an item is a variable or not.
-#    For now, anything that is not a number(float or double) is a variable.
-#    """
-#    
-#    return not is_self_evaluating(exp)
+def is_variable(exp):
+    
+    """
+    Checks if an item is a variable or not.
+    For now, anything that is not a number(float or double) is a variable.
+    """
+    
+    return type(exp) == str
 
 # to ease checking predicates, we will define a template function
 # which will check if the list begins with a particular keyword.
