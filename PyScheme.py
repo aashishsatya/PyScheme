@@ -10,6 +10,7 @@ of the Scheme Programming Language in Python.
 """
 
 from Classifier import *
+from PrimitiveProcedures import *
 
 
 # to implement the environment model of evaluation in Scheme, 
@@ -69,44 +70,7 @@ class Procedure(object):
             procedure_environment.add(self.parameter_names[index], parameter_values[index])
         return eval(self.body, procedure_environment)
         
-def apply_operators(op, arguments_as_string):
-    
-    # op stands for the operator given as string
-    
-    """
-    Applies operator to given arguments (may be more than two)
-    """
-    
-    import operator
-    
-    # convert all arguments to floats
-    arguments = []
-    for arg in arguments_as_string:
-        arguments.append(float(arg))
-    
-    # find the type of the operator
-    if op == '+':
-        current_op = operator.add
-    elif op == '-':
-        current_op = operator.sub
-    elif op == '*':
-        current_op = operator.mul
-    elif op == '/':
-        current_op = operator.div
-    elif op == '=':
-        current_op = operator.eq
-                    
-    running_value = current_op(arguments[0], arguments[1])
-    
-    if len(arguments) == 2:
-        return running_value
-        
-    # else has more than two arguments, so process them
-    remaining_arguments = arguments[2:]
-    for argument in remaining_arguments:
-        running_value = current_op(running_value, argument)
-    
-    return running_value
+
     
 def evaluate_arguments(list_of_args, env):
     
@@ -145,7 +109,7 @@ def eval(exp, env = global_env):
         variable = get_assignment_variable(exp)
         new_value = get_assignment_new_value(exp)
         env.update(variable, new_value)
-        return ';Value: ' + variable
+        return 
         
     elif is_definition(exp):        
         definition_name = get_definition_name(exp)
@@ -160,7 +124,7 @@ def eval(exp, env = global_env):
             return ';Value: ' + get_definition_function_name(definition_name)
         body = eval(get_definition_body(exp), env)
         env.add(definition_name, body)
-        return ';Value: ' + definition_name
+        return 
         
     elif is_if_statement(exp):        
         condition = get_condition(exp)
@@ -181,7 +145,7 @@ def eval(exp, env = global_env):
         # ['begin', <list of things to do>]
         # all we need to do is evaluate the arguments
         args = evaluate_arguments(get_begin_statements(exp), env)
-        return ';Value: ' + args[-1]
+        return args[-1]
         
     elif is_cond(exp):
         # condition - consequent pairs
@@ -200,10 +164,24 @@ def eval(exp, env = global_env):
         except:
             return exp
         
-    elif get_name(exp) in ['+', '-', '*', '/', '=']:
+    # the PrimitiveProcedures file takes care of this part
+        
+    elif get_name(exp) in primitive_operators:
         op = get_name(exp)
-        # evaluate arguments before applying operators        
-        return apply_operators(op, evaluate_arguments(get_arguments(exp), env))  
+        # evaluate arguments before applying operators
+        args = evaluate_arguments(get_arguments(exp), env)        
+        result = apply_operators(op, args)
+        if result == True:
+            return '#t'
+        elif result == False:
+            return '#f'
+        else:
+            return result
+            
+    elif get_name(exp) in primitive_list_operators:
+        list_operation = get_name(exp)
+        args = evaluate_arguments(get_arguments(exp), env)
+        return apply_list_procedure(list_operation, args)
               
     # item is a procedure
     procedure_name = get_name(exp)
