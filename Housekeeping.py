@@ -78,8 +78,7 @@ def read_from_tokens(token_list):
         # so simply return
         return first_token
 
-# most of these functions are implemented for data abstraction as per
-# the guidelines taught to us at NIT Calicut.
+# most of these functions are implemented for data abstraction 
 
 def make_exp(keyword, *args):
     
