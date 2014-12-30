@@ -6,7 +6,8 @@ Created on Sun Dec 28 20:16:29 2014
 Description: File to handle primitive procedures
 """
 
-primitive_operators = ['+', '-', '*', '/', '=', '<', '>', '<=', '>=']
+primitive_operators = ['+', '-', '*', '/', '=', '<', '>', '<=', '>=',
+                       'and', 'or', 'not']
 
 # sorry, operations like cadddar etc. are not supported. 
 primitive_list_operators = ['cons', 'car', 'cdr', 'null?', 'list?', 'list',
@@ -127,6 +128,12 @@ def apply_operators(op, arguments):
         current_op = operator.le
     elif op == '>=':
         current_op = operator.ge
+    elif op == 'and':
+        current_op = operator.and_
+    elif op == 'or':
+        current_op = operator.or_
+    elif op == 'not':
+        return operator.not_(arguments[0])
                     
     if op in ['+', '-', '*', '/']:
         return apply_arithmetic_operator(current_op, arguments)
