@@ -75,8 +75,25 @@ def read_from_tokens(token_list):
     else:
         # token is not the start of a new expression
         # i.e. already in its smallest form
-        # so simply return
-        return first_token
+        # so try to find the matching data type, and return
+        return find_best_data_type(first_token)
+        
+def find_best_data_type(data_obj):
+    
+    """
+    Finds the best possible data type for an object
+    Input: a string
+    Output: an int, float or a string depending on the input string
+    """
+    
+    try:
+        return int(data_obj)
+    except ValueError:
+        try:
+            return float(data_obj)
+        except ValueError:
+            # string
+            return data_obj
 
 # most of these functions are implemented for data abstraction 
 
