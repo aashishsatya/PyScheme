@@ -13,12 +13,12 @@ primitive_list_operators = ['cons', 'car', 'cdr', 'null?', 'list?', 'list',
                             'append']
 
 def make_list(arguments):
-    return ['list'] + arguments
+    return arguments
     
-def get_elements_in_list(listname):
-    # [['list', <elem1>, <elem2>...]]
-    # extra square brackets again because of get_arguments() from earlier
-    return listname[1:]
+#def get_elements_in_list(listname):
+#    # [['list', <elem1>, <elem2>...]]
+#    # extra square brackets again because of get_arguments() from earlier
+#    return listname[1:]
     
 def apply_list_procedure(list_operation, args):
     
@@ -29,38 +29,76 @@ def apply_list_procedure(list_operation, args):
 #    print 'applying list procedure'
 #    print 'args =', args
 #    print 'list operation =', list_operation
+#    print 'type args == list? ', type(args) == list
     
     if list_operation == 'cons':
         # [<value>, <list_item>]
-        return make_list([args[0]] + get_elements_in_list(args[1]))
+        return make_list([args[0]] + args[1])
         
     elif list_operation == 'car':
-        # [0] index because of extra square brackets
-        # from get_arguments earlier
-        list_args = get_elements_in_list(args[0])
-        return list_args[0]
+        # [<list_item>]
+        # extra parens because of the [1:] from get_arguments() 
+        # earlier in PyScheme.py
+        return args[0][0]
         
     elif list_operation == 'cdr':
-        list_args = get_elements_in_list(args[0])
-        return make_list(list_args[1:])
+        return args[0][1:]
         
     elif list_operation == 'null?':
-        list_args = get_elements_in_list(args[0])
-        return list_args == []
+        return args[0] == []
         
     elif list_operation == 'list?':
-        return args[0][0] == 'list'
+        return type(args[0]) == list
         
     elif list_operation == 'list':
-        return make_list(args)
+        return args
         
     elif list_operation == 'append':
         # [<list1>, <list2>]
-        return make_list(get_elements_in_list(args[0]) + 
-                         get_elements_in_list(args[1]))
+        return args[0] + args[1]
         
 
-def apply_operators(op, arguments_as_string):
+def apply_arithmetic_operator(op, arguments):
+    
+    """
+    Applies an arithmetic operator (+, -, /, *) to the arguments.
+    Input: An operator type and arguments
+    Output: Value after applying operator op to its arguments.
+    """
+    
+    running_value = op(arguments[0], arguments[1])
+    
+    if len(arguments) == 2:
+        return running_value
+        
+    # else has more than two arguments, so process them
+    remaining_arguments = arguments[2:]
+    for argument in remaining_arguments:
+        running_value = op(running_value, argument)
+    
+    return running_value
+    
+def apply_logic_operator(op, arguments):
+    
+    """
+    Applies a logic operator (>, <, == etc.) to the arguments
+    Input: An operator and arguments
+    Output: A True or False boolean value after applying op to its arguments
+    """
+    
+    running_value = op(arguments[0], arguments[1])
+    
+    if len(arguments) == 2:
+        return running_value
+        
+    index = 2
+    while running_value and index < len(arguments):
+        running_value = running_value and op(arguments[index - 1], arguments[index])
+        index += 1
+        
+    return running_value
+    
+def apply_operators(op, arguments):
     
     # op stands for the operator given as string
     
@@ -69,11 +107,6 @@ def apply_operators(op, arguments_as_string):
     """
     
     import operator
-    
-    # convert all arguments to floats
-    arguments = []
-    for arg in arguments_as_string:
-        arguments.append(float(arg))
     
     # find the type of the operator
     if op == '+':
@@ -95,15 +128,7 @@ def apply_operators(op, arguments_as_string):
     elif op == '>=':
         current_op = operator.ge
                     
-    running_value = current_op(arguments[0], arguments[1])
-    
-    if len(arguments) == 2:
-        return running_value
-        
-    # else has more than two arguments, so process them
-    remaining_arguments = arguments[2:]
-    for argument in remaining_arguments:
-        running_value = current_op(running_value, argument)
-    
-    return running_value
+    if op in ['+', '-', '*', '/']:
+        return apply_arithmetic_operator(current_op, arguments)
+    return apply_logic_operator(current_op, arguments)
 
