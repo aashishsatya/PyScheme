@@ -171,12 +171,7 @@ def eval(exp, env = global_env):
         # evaluate arguments before applying operators
         args = evaluate_arguments(get_arguments(exp), env)        
         result = apply_operators(op, args)
-        if result == True:
-            return '#t'
-        elif result == False:
-            return '#f'
-        else:
-            return result
+        return result
             
     elif get_name(exp) in primitive_list_operators:
         list_operation = get_name(exp)
