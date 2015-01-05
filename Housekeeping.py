@@ -188,13 +188,15 @@ def get_begin_statements(exp):
 
 # getters for cond
 #  internal representation:
-# '['cond',[[<condition1>, <consequent1>], [<condition2, conseq2]...]]
+# ['cond',[<condition1>, <consequent1>], [<condition2, conseq2]...]
 
-def get_cond_cons_pairs(exp):
-    # the zero index is used because using [1:] gives a single element list
-    # with the pairs that we need, again as a list
-    # i.e. [[[<condition1>, <consequent1>], [<condition2, conseq2]...]]] <= extra parens
-    return exp[1:][0]
+def get_cond_conseq_pairs(exp):
+    
+    """
+    Return a list of all the condition-consequent pairs
+    """
+    return exp[1:]
+    
 def get_condition_from_pair(pair):
     # [<condition>, <consequent>]
     return pair[0]
