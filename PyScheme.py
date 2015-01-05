@@ -110,8 +110,9 @@ def eval(exp, env = global_env):
     elif is_assignment(exp):        
         variable = get_assignment_variable(exp)
         new_value = get_assignment_new_value(exp)
+        previous_value = env.lookup(variable)
         env.update(variable, new_value)
-        return 
+        return str(previous_value)
         
     elif is_definition(exp):        
         definition_name = get_definition_name(exp)
@@ -123,10 +124,10 @@ def eval(exp, env = global_env):
                                               get_definition_parameters(definition_name),
                                               body))
             env.add(get_definition_function_name(definition_name), lambda_expression)
-            return
+            return get_definition_function_name(definition_name)
         body = eval(get_definition_body(exp), env)
         env.add(definition_name, body)
-        return 
+        return definition_name
         
     elif is_if_statement(exp):        
         condition = get_condition(exp)
@@ -189,7 +190,11 @@ def eval(exp, env = global_env):
     # evaluate arguments as before
     args = evaluate_arguments(get_arguments(exp), env)
 #    print 'args =', args
-    required_procedure_obj = env.lookup(procedure_name)
+    # if the procedure is already defined in the environment
+    # is_variable looks it up
+    # otherwise, it makes a new procedure object
+    # e.g. when directly lambda is used
+    required_procedure_obj = eval(procedure_name)
     return required_procedure_obj.call(args, env)
     
 def repl(prompt='PyScheme> '):
