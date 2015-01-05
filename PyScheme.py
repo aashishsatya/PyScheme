@@ -50,6 +50,8 @@ class Environment(object):
 
 # defining a global environment
 global_env = Environment()
+global_env.add('#t', True)
+global_env.add('#f', False)
 
 class Procedure(object):
     
@@ -121,7 +123,7 @@ def eval(exp, env = global_env):
                                               get_definition_parameters(definition_name),
                                               body))
             env.add(get_definition_function_name(definition_name), lambda_expression)
-            return ';Value: ' + get_definition_function_name(definition_name)
+            return
         body = eval(get_definition_body(exp), env)
         env.add(definition_name, body)
         return 
@@ -149,11 +151,14 @@ def eval(exp, env = global_env):
         
     elif is_cond(exp):
         # condition - consequent pairs
-        cond_conseq_pairs = get_cond_conseq_pairs(exp) 
+        cond_conseq_pairs = get_cond_conseq_pairs(exp)
+#        print 'cond_conseq_pairs =', cond_conseq_pairs
         for cond_cons_pair in cond_conseq_pairs:
             condition = get_condition_from_pair(cond_cons_pair)
+#            print 'condition =', condition
             if condition == 'else' or eval(condition, env):
                 consequent = get_consequent_from_pair(cond_cons_pair)
+#                print 'consequent =', consequent
                 return eval(consequent, env)        
     
     elif is_variable(exp):
@@ -180,8 +185,10 @@ def eval(exp, env = global_env):
               
     # item is a procedure
     procedure_name = get_name(exp)
+#    print 'procedure_name =', procedure_name
     # evaluate arguments as before
     args = evaluate_arguments(get_arguments(exp), env)
+#    print 'args =', args
     required_procedure_obj = env.lookup(procedure_name)
     return required_procedure_obj.call(args, env)
     
