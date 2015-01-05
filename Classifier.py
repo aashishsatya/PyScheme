@@ -24,7 +24,7 @@ def is_self_evaluating(exp):
     false otherwise.
     """
     
-    return type(exp) == int or type(exp) == float
+    return type(exp) in [int, float, bool]
         
 def is_variable(exp):
     
