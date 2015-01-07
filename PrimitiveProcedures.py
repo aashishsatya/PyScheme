@@ -16,6 +16,46 @@ primitive_list_operators = ['cons', 'car', 'cdr', 'null?', 'list?', 'list',
 def make_list(arguments):
     return arguments
     
+def is_shortened_list_operation(operation_name):
+    
+    """
+    Checks if an operation is a shortened list operation such as caar, cadddr
+    etc.
+    Input: A string
+    Output: True or False depending on whether the operation is a shortened
+    list operation
+    """
+    
+#    print 'operation_name = ', operation_name
+    if operation_name[0] != 'c' or operation_name[-1] != 'r':
+#        print 'returning false, ends do not match'
+        return False
+        
+#    print 'checking for', operation_name[1:-1]
+    for character in operation_name[1:-1]:
+#        print 'character != a: ', str(character != 'a')
+#        print 'character != d: ', str(character != 'd')
+        if character != 'a' and character != 'd':
+            return False
+    
+#    print 'returning true...'        
+    return True
+    
+def expand_list_operation(list_op, args):
+    
+#    print 'args =', args
+    
+    for index in range(len(list_op) - 2, 0, -1):
+        if list_op[index] == 'a':
+            args = ['car', args]
+        elif list_op[index] == 'd':
+            args = ['cdr', args]
+            
+    return args
+        
+    
+        
+    
 #def get_elements_in_list(listname):
 #    # [['list', <elem1>, <elem2>...]]
 #    # extra square brackets again because of get_arguments() from earlier
