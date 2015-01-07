@@ -182,7 +182,19 @@ def eval(exp, env = global_env):
     elif get_name(exp) in primitive_list_operators:
         list_operation = get_name(exp)
         args = evaluate_arguments(get_arguments(exp), env)
+#        print 'args =', args
         return apply_list_procedure(list_operation, args)
+        
+    # check for shortened list operation        
+    elif  is_shortened_list_operation(get_name(exp)):
+        # find and convert to corresponding expanded form
+        # then send back to eval
+#        print 'shortened list operation invoked'
+        args = evaluate_arguments(get_arguments(exp), env)
+        # args[0] to remove the extra parens inserted due to get_arguments()
+        expanded_expression = expand_list_operation(get_name(exp), args[0])
+#        print 'expanded_expression =', expanded_expression
+        return eval(expanded_expression)
               
     # item is a procedure
     procedure_name = get_name(exp)
