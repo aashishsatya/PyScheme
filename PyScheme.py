@@ -228,7 +228,10 @@ def repl(prompt='PyScheme> '):
             if len(temp_input) == 0 or temp_input.isspace() or temp_input.lstrip()[0] == ';':
                 continue
             input_str += ' ' + temp_input
-        val = eval(parse(input_str))
+        parsed_input = parse(input_str)
+        if parsed_input == ['exit']:
+            break
+        val = eval(parsed_input)
         if val != None:
             print val
             
