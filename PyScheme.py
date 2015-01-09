@@ -220,14 +220,14 @@ def repl(prompt='PyScheme> '):
     "A prompt-read-eval-print loop."
     while True:
         input_str = raw_input(prompt)
-        if input_str.lstrip()[0] == ';':
-            # comment, continue
+        if len(input_str) == 0 or input_str.isspace() or input_str.lstrip()[0] == ';':
+            # whitelines and comments, continue
             continue
         while input_str.count('(') != input_str.count(')'):
             temp_input = raw_input()
-            if temp_input.lstrip()[0] == ';':
+            if len(temp_input) == 0 or temp_input.isspace() or temp_input.lstrip()[0] == ';':
                 continue
-            input_str += temp_input
+            input_str += ' ' + temp_input
         val = eval(parse(input_str))
         if val != None:
             print val
