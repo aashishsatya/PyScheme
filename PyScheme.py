@@ -106,6 +106,9 @@ def eval(exp, env = global_env):
     
     if is_self_evaluating(exp):
         return exp
+        
+    if is_quoted(exp):
+        return get_text_of_quotation(exp)
     
     elif is_assignment(exp):        
         variable = get_assignment_variable(exp)
@@ -235,5 +238,5 @@ def repl(prompt='PyScheme> '):
         if val != None:
             print val
             
-#repl()
+repl()
         
