@@ -204,6 +204,13 @@ def get_consequent_from_pair(pair):
     # [<condition>, <consequent>]
     return pair[1]
     
+# getters for quoted expressions
+# not a list, simply a string with "'" (apostrophe) inserted
+# infront of it
+
+def get_text_of_quotation(exp):
+    return exp[1:]
+    
                 
         
 
