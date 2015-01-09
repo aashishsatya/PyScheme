@@ -209,10 +209,20 @@ def eval(exp, env = global_env):
     required_procedure_obj = eval(procedure_name)
     return required_procedure_obj.call(args, env)
     
+#def repl(prompt='PyScheme> '):
+#    "A prompt-read-eval-print loop."
+#    while True:
+#        val = eval(parse(raw_input(prompt)))
+#        if val != None:
+#            print val
+    
 def repl(prompt='PyScheme> '):
     "A prompt-read-eval-print loop."
     while True:
-        val = eval(parse(raw_input(prompt)))
+        input_str = raw_input(prompt)
+        while input_str.count('(') != input_str.count(')'):
+            input_str += raw_input()
+        val = eval(parse(input_str))
         if val != None:
             print val
             
