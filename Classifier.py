@@ -30,10 +30,18 @@ def is_variable(exp):
     
     """
     Checks if an item is a variable or not.
-    For now, anything that is not a number(float or double) is a variable.
+    For now, anything that is not a number(float or double) can be a variable.
     """
     
     return type(exp) == str
+    
+def is_quoted(exp):
+    
+    """
+    Checks if an item is a quoted expression.
+    """
+    
+    return exp[0] == "'"
 
 # to ease checking predicates, we will define a template function
 # which will check if the list begins with a particular keyword.
