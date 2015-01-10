@@ -111,6 +111,14 @@ def is_cond(exp):
     
     return generic_keyword_check(exp, 'cond')
     
+def is_let(exp):
+    
+    """
+    Checks if the given expression is a let expression
+    """
+    
+    return generic_keyword_check(exp, 'let')
+    
 def is_application(exp):
     
     """
