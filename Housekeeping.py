@@ -105,6 +105,8 @@ def make_exp(keyword, *args):
     Output: A parsed-form expression of the above mentioned scheme keyword
     """
     
+#    print 'makeexp: keyword =', keyword
+#    print 'makeexp: args =', args
     new_exp = [keyword]
     for arg in args:
         new_exp.append(arg)
@@ -205,11 +207,27 @@ def get_consequent_from_pair(pair):
     return pair[1]
     
 # getters for quoted expressions
-# not a list, simply a string with "'" (apostrophe) inserted
-# infront of it
+# they're simply strings with "'" (apostrophe) inserted at the front
 
 def get_text_of_quotation(exp):
     return exp[1:]
+    
+# getters for let expressions
+# internal representation:
+# ['let', [[<variable1>, <value1>], [<variable2>, <value2>]...], <body>]
+    
+def get_let_variable_expression_pairs(exp):
+    return exp[1]
+    
+def get_let_body(exp):
+    return exp[2]
+    
+# [<variable>, <value>]
+def get_let_variable_from_pair(pair):
+    return pair[0]
+def get_let_expressions_from_pair(pair):
+    return pair[1]
+
     
                 
         
