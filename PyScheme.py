@@ -117,11 +117,36 @@ def eval(exp, env = global_env):
         env.update(variable, new_value)
         return str(previous_value)
         
+    elif is_let(exp):
+        # let is nothing but syntactic sugar for underlying lambda
+        # expression:
+        # (let ((var1 exp1) (var2 exp2) ... (varn expn)) body)
+        # is ((lambda (var1 var2 ... varn) body) exp1 exp2 ... expn)
+        # so we get lambda variables and expressions first
+        variables = []
+        expressions = []
+        variable_expression_pairs = get_let_variable_expression_pairs(exp)
+        for pair in variable_expression_pairs:
+            variables.append(get_let_variable_from_pair(pair))
+            expressions.append(get_let_expressions_from_pair(pair))
+        body = get_let_body(exp)
+        # make lambda function
+        lambda_expression = eval(make_exp('lambda', variables, body))
+        # because arguments are in the list form, using make_exp()
+        # won't be clean because what we would get is a lambda function
+        # called with arguments as a list, when what we really need is
+        # a lambda function called with arguments as just arguments
+        # (and not list)
+        args = evaluate_arguments(expressions, env)
+#        print 'args =', args
+        return lambda_expression.call(args, env)
+            
+        
     elif is_definition(exp):        
         definition_name = get_definition_name(exp)
         if is_definition_function(definition_name):
             # means define has been used to define a function
-            # send straight to lambda
+            # so again send straight to lambda
             body = get_definition_body(exp)
             lambda_expression = eval(make_exp('lambda',
                                               get_definition_parameters(definition_name),
@@ -238,5 +263,5 @@ def repl(prompt='PyScheme> '):
         if val != None:
             print val
             
-repl()
+#repl()
         
