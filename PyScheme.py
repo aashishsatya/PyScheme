@@ -218,11 +218,38 @@ def eval(exp, env = global_env):
 #        val = eval(parse(raw_input(prompt)))
 #        if val != None:
 #            print val
+
+def convert_to_scheme_expression(val):
     
-def repl(prompt='PyScheme> '):
+    """
+    Prints Python expression val as an expression in Scheme
+    """
+    
+    # some code taken from Peter Norvig's implementation of the same
+    # thanks Mr. Norvig
+    # list_repn stands for list representation
+    if type(val) == list:
+        list_repn = '(' + ' '.join(map(convert_to_scheme_expression, val)) + ')'
+        return list_repn
+
+    elif str(val) == 'True':
+        return '#t'
+    elif str(val) == 'False':
+        return '#f'
+    else:
+        return str(val)
+    
+def repl():
+    
     "A prompt-read-eval-print loop."
+    
+    print ''
+    print 'PyScheme: A Scheme-like interpreter written in Python by Aashish Satyajith.'
+    print 'Note: Interpreter does not support all Scheme operations, see README.'
+    print ''
+    
     while True:
-        input_str = raw_input(prompt)
+        input_str = raw_input('PyScheme> ')
         if len(input_str) == 0 or input_str.isspace() or input_str.lstrip()[0] == ';':
             # whitelines and comments, continue
             continue
@@ -236,7 +263,10 @@ def repl(prompt='PyScheme> '):
             break
         val = eval(parsed_input)
         if val != None:
-            print val
+            print ''
+            print ';Value: ' + convert_to_scheme_expression(val)
+            print ''
             
 repl()
+print ''
         
