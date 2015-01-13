@@ -193,5 +193,6 @@ def apply_operators(op, arguments):
                     
     if op in ['+', '-', '*', '/']:
         return apply_arithmetic_operator(current_op, arguments)
+        
     return apply_logic_operator(current_op, arguments)
 

@@ -170,8 +170,8 @@ def eval(exp, env = global_env):
         try:
             value = env.lookup(exp)
             return value
-        except:
-            return exp
+        except AttributeError:
+            raise NameError("Unbound variable: " + exp)
         
     # the PrimitiveProcedures file takes care of this part
         
@@ -246,6 +246,7 @@ def repl():
     print ''
     print 'PyScheme: A Scheme-like interpreter written in Python by Aashish Satyajith.'
     print 'Note: Interpreter does not support all Scheme operations, see README.'
+    print "Enter '(exit)' (without quotes) to exit."
     print ''
     
     while True:
@@ -261,11 +262,14 @@ def repl():
         parsed_input = parse(input_str)
         if parsed_input == ['exit']:
             break
-        val = eval(parsed_input)
-        if val != None:
-            print ''
-            print ';Value: ' + convert_to_scheme_expression(val)
-            print ''
+        print ''
+        try:
+            val = eval(parsed_input)
+            if val != None:
+                print ';Value: ' + convert_to_scheme_expression(val)
+        except Exception as error:
+            print ';Error: ' + error.message
+        print ''
             
 repl()
 print ''
