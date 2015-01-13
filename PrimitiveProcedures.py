@@ -7,7 +7,7 @@ Description: File to handle primitive procedures
 """
 
 primitive_operators = ['+', '-', '*', '/', '=', '<', '>', '<=', '>=',
-                       'and', 'or', 'not']
+                       'and', 'or', 'not', 'eq?']
 
 # sorry, operations like cadddar etc. are not supported. 
 primitive_list_operators = ['cons', 'car', 'cdr', 'null?', 'list?', 'list',
@@ -74,15 +74,25 @@ def apply_list_procedure(list_operation, args):
     
     if list_operation == 'cons':
         # [<value>, <list_item>]
+        if type(args[0]) not in (int, float, str):
+            error_message = 'The object ' + str(args[0]) + ', passed as an argument to cons, is not the correct type.'
+            raise TypeError(error_message)
+        if not type(args[1]) == list:
+            error_message = 'The object ' + str(args[0]) + ', passed as an argument to cons, is not a list.'
+            raise TypeError(error_message)
         return make_list([args[0]] + args[1])
         
     elif list_operation == 'car':
         # [<list_item>]
         # extra parens because of the [1:] from get_arguments() 
         # earlier in PyScheme.py
+        if args[0] == []:
+            raise ValueError("The object (), passed as the first argument to car, is not the correct type.")
         return args[0][0]
         
     elif list_operation == 'cdr':
+        if args[0] == []:
+            raise ValueError("The object () passed as an argument to safe-cdr is not a proper list.")
         return args[0][1:]
         
     elif list_operation == 'null?':
@@ -96,6 +106,12 @@ def apply_list_procedure(list_operation, args):
         
     elif list_operation == 'append':
         # [<list1>, <list2>]
+        if not type(args[0]) == list:
+            error_message = 'The object ' + str(args[0]) + ', passed as an argument to append, is not a list.'
+            raise TypeError(error_message)
+        if not type(args[1]) == list:
+            error_message = 'The object ' + str(args[1]) + ', passed as an argument to append, is not a list.'
+            raise TypeError(error_message)
         return args[0] + args[1]
         
 
@@ -158,7 +174,7 @@ def apply_operators(op, arguments):
         current_op = operator.mul
     elif op == '/':
         current_op = operator.div
-    elif op == '=':
+    elif op == '=' or op == 'eq?':
         current_op = operator.eq
     elif op == '<':
         current_op = operator.lt
