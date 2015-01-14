@@ -225,23 +225,26 @@ def repl():
     print ''
     print 'PyScheme: A Scheme-like interpreter written in Python by Aashish Satyajith.'
     print 'Note: Interpreter does not support all Scheme operations, see README.'
-    print "Enter '(exit)' (without quotes) to exit."
+    print "Enter '(exit)' (without quotes) or Ctrl-D to exit."
     print ''
     
     while True:
-        input_str = raw_input('PyScheme> ')
-        if len(input_str) == 0 or input_str.isspace() or input_str.lstrip()[0] == ';':
-            # whitelines and comments, continue
-            continue
-        while input_str.count('(') != input_str.count(')'):
-            temp_input = raw_input()
-            if len(temp_input) == 0 or temp_input.isspace() or temp_input.lstrip()[0] == ';':
+        try:
+            input_str = raw_input('PyScheme> ')
+            if len(input_str) == 0 or input_str.isspace() or input_str.lstrip()[0] == ';':
+                # whitelines and comments, continue
                 continue
-            input_str += ' ' + temp_input
-        parsed_input = parse(input_str)
-        if parsed_input == ['exit']:
+            while input_str.count('(') != input_str.count(')'):
+                temp_input = raw_input()
+                if len(temp_input) == 0 or temp_input.isspace() or temp_input.lstrip()[0] == ';':
+                    continue
+                input_str += ' ' + temp_input
+            parsed_input = parse(input_str)
+            if parsed_input == ['exit']:
+                break
+            print ''
+        except EOFError:
             break
-        print ''
         try:
             val = eval(parsed_input)
             if val != None:
