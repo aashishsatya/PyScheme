@@ -37,7 +37,7 @@ class Environment(object):
         Update the variable to the new value
         """
         if variable not in self.frame.keys() and self.enclosing_environment == None:
-            raise ValueError('Variable not defined in the environment')
+            raise ValueError("Unbound variable: " + variable)
         elif variable not in self.frame.keys():
             self.enclosing_environment.update(variable, new_value)
         self.frame[variable] = new_value
@@ -65,8 +65,7 @@ class Procedure(object):
         
     def call(self, parameter_values, calling_environment):        
         if len(self.parameter_names) != len(parameter_values):
-            raise TypeError('Procedure expects ' + len(self.parameter_names) +
-                            ' arguments.')
+            raise TypeError('Procedure has been called with ' + str(len(parameter_values))) + ' argument(s); it requires exactly ' + str(len(parameter_names)) + ' argument(s).'
         procedure_environment = Environment(calling_environment)
         for index in range(len(self.parameter_names)):
             procedure_environment.add(self.parameter_names[index], parameter_values[index])
@@ -148,7 +147,6 @@ def eval(exp, env = global_env):
         return Procedure(params, body)
         
     elif is_begin(exp):
-        # ['begin', <list of things to do>]
         # all we need to do is evaluate the arguments
         args = evaluate_arguments(get_begin_statements(exp), env)
         return args[-1]
@@ -219,26 +217,7 @@ def eval(exp, env = global_env):
 #        if val != None:
 #            print val
 
-def convert_to_scheme_expression(val):
-    
-    """
-    Prints Python expression val as an expression in Scheme
-    """
-    
-    # some code taken from Peter Norvig's implementation of the same
-    # thanks Mr. Norvig
-    # list_repn stands for list representation
-    if type(val) == list:
-        list_repn = '(' + ' '.join(map(convert_to_scheme_expression, val)) + ')'
-        return list_repn
-
-    elif str(val) == 'True':
-        return '#t'
-    elif str(val) == 'False':
-        return '#f'
-    else:
-        return str(val)
-    
+ 
 def repl():
     
     "A prompt-read-eval-print loop."
