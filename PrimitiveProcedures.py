@@ -16,6 +16,26 @@ primitive_list_operators = ['cons', 'car', 'cdr', 'null?', 'list?', 'list',
 def make_list(arguments):
     return arguments
     
+def convert_to_scheme_expression(val):
+    
+    """
+    Prints Python expression val as an expression in Scheme
+    """
+    
+    # some code taken from Peter Norvig's implementation of the same
+    # thanks Mr. Norvig
+    # list_repn stands for list representation
+    if type(val) == list:
+        list_repn = '(' + ' '.join(map(convert_to_scheme_expression, val)) + ')'
+        return list_repn
+
+    elif str(val) == 'True':
+        return '#t'
+    elif str(val) == 'False':
+        return '#f'
+    else:
+        return str(val)
+    
 def is_shortened_list_operation(operation_name):
     
     """
@@ -60,7 +80,16 @@ def expand_list_operation(list_op, args):
 #    # [['list', <elem1>, <elem2>...]]
 #    # extra square brackets again because of get_arguments() from earlier
 #    return listname[1:]
+
+def raise_error(function_name, error_type, error_arg):
     
+    """
+    Raises an error of type error_type with error_arg as the object
+    being printed as responsible for the error.
+    """
+    
+    raise error_type('The object ' + convert_to_scheme_expression(error_arg) + ', passed as an argument to ' + function_name + ', is not the correct type.')
+        
 def apply_list_procedure(list_operation, args):
     
     """
@@ -74,45 +103,55 @@ def apply_list_procedure(list_operation, args):
     
     if list_operation == 'cons':
         # [<value>, <list_item>]
+        if len(args) != 2:
+            raise TypeError('The procedure cons has been called with ' + str(len(args)) + ' argument(s); it requires exactly ' + str(len(args[0])) + ' argument(s).')
         if type(args[0]) not in (int, float, str):
-            error_message = 'The object ' + str(args[0]) + ', passed as an argument to cons, is not the correct type.'
-            raise TypeError(error_message)
+            raise_error(list_operation, TypeError, convert_to_scheme_expression(args[0]))
         if not type(args[1]) == list:
-            error_message = 'The object ' + str(args[0]) + ', passed as an argument to cons, is not a list.'
-            raise TypeError(error_message)
+            raise_error(list_operation, TypeError, convert_to_scheme_expression(args[0]))
         return make_list([args[0]] + args[1])
-        
-    elif list_operation == 'car':
-        # [<list_item>]
-        # extra parens because of the [1:] from get_arguments() 
-        # earlier in PyScheme.py
-        if args[0] == []:
-            raise ValueError("The object (), passed as the first argument to car, is not the correct type.")
-        return args[0][0]
-        
-    elif list_operation == 'cdr':
-        if args[0] == []:
-            raise ValueError("The object () passed as an argument to safe-cdr is not a proper list.")
-        return args[0][1:]
-        
-    elif list_operation == 'null?':
-        return args[0] == []
-        
-    elif list_operation == 'list?':
-        return type(args[0]) == list
-        
-    elif list_operation == 'list':
-        return args
         
     elif list_operation == 'append':
         # [<list1>, <list2>]
         if not type(args[0]) == list:
-            error_message = 'The object ' + str(args[0]) + ', passed as an argument to append, is not a list.'
-            raise TypeError(error_message)
+            raise_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
         if not type(args[1]) == list:
-            error_message = 'The object ' + str(args[1]) + ', passed as an argument to append, is not a list.'
-            raise TypeError(error_message)
-        return args[0] + args[1]
+            raise_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
+        appended_lists = []
+        for arg in args:
+            appended_lists += arg
+        return appended_lists
+        
+    elif list_operation == 'list':
+        return args
+        
+    if len(args) != 1:
+        raise TypeError('The procedure ' + list_operation + ' has been called with ' + str(len(args)) + ' argument(s); it requires exactly 1 argument.')
+    
+    if list_operation == 'list?':
+        return type(args[0]) == list
+        
+    if type(args[0]) != list:
+            raise_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
+        
+    if list_operation == 'car':
+        # [<list_item>]
+        # extra parens because of the [1:] from get_arguments() 
+        # earlier in PyScheme.py
+        if args[0] == []:
+            raise_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
+        return args[0][0]
+        
+    elif list_operation == 'cdr':
+        if args[0] == []:
+            raise_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
+        return args[0][1:]
+        
+    elif list_operation == 'null?':
+        return args[0] == []    
+        
+            
+    
         
 
 def apply_arithmetic_operator(op, arguments):
@@ -165,6 +204,10 @@ def apply_operators(op, arguments):
     
     import operator
     
+    for arg in arguments:
+        if type(arg) not in (int, float) and op != 'eq?':
+            raise TypeError("The argument " + convert_to_scheme_expression(arg) + " passed to the operation is not the correct type.")
+    
     # find the type of the operator
     if op == '+':
         current_op = operator.add
@@ -174,7 +217,7 @@ def apply_operators(op, arguments):
         current_op = operator.mul
     elif op == '/':
         current_op = operator.div
-    elif op == '=' or op == 'eq?':
+    elif op == '=':
         current_op = operator.eq
     elif op == '<':
         current_op = operator.lt
@@ -190,6 +233,11 @@ def apply_operators(op, arguments):
         current_op = operator.or_
     elif op == 'not':
         return operator.not_(arguments[0])
+    elif op == 'eq?':
+        if type(arguments[0]) == str and type(arguments[1]) == str:
+            return arguments[0] == arguments[1]
+        else:
+            return id(arguments[0]) == id(arguments[1])
                     
     if op in ['+', '-', '*', '/']:
         return apply_arithmetic_operator(current_op, arguments)
