@@ -252,4 +252,7 @@ def repl():
             
 repl()
 print ''
+print 'End of input stream reached.'
+print 'Moriturus te saluto.'
+print ''
         
