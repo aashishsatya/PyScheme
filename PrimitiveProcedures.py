@@ -204,9 +204,16 @@ def apply_operators(op, arguments):
     
     import operator
     
+    if op == 'and':
+        current_op = operator.and_
+    elif op == 'or':
+        current_op = operator.or_
+    elif op == 'not':
+        return operator.not_(arguments[0])
+    
     for arg in arguments:
-        if type(arg) not in (int, float) and op != 'eq?':
-            raise TypeError("The argument " + convert_to_scheme_expression(arg) + " passed to the operation is not the correct type.")
+        if type(arg) not in (int, float) and op not in ('eq?', 'and', 'or', 'not'):
+            raise_error(op, TypeError, arg)
     
     # find the type of the operator
     if op == '+':
@@ -226,13 +233,7 @@ def apply_operators(op, arguments):
     elif op == '<=':
         current_op = operator.le
     elif op == '>=':
-        current_op = operator.ge
-    elif op == 'and':
-        current_op = operator.and_
-    elif op == 'or':
-        current_op = operator.or_
-    elif op == 'not':
-        return operator.not_(arguments[0])
+        current_op = operator.ge    
     elif op == 'eq?':
         if type(arguments[0]) == str and type(arguments[1]) == str:
             return arguments[0] == arguments[1]
