@@ -212,8 +212,3 @@ def get_text_of_quotation(exp):
     if type(exp) == list:
         return exp[1]
     return exp[1:]
-    
-                
-        
-
-
