@@ -205,7 +205,7 @@ def eval(exp, env = global_env):
 #    print 'procedure_name =', procedure_name
     # evaluate arguments as before
     args = evaluate_arguments(get_arguments(exp), env)
-    print 'args =', args
+#    print 'args =', args
     # if the procedure is already defined in the environment
     # is_variable looks it up
     # otherwise, it makes a new procedure object
