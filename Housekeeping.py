@@ -205,10 +205,12 @@ def get_consequent_from_pair(pair):
     return pair[1]
     
 # getters for quoted expressions
-# not a list, simply a string with "'" (apostrophe) inserted
-# infront of it
+# either a string with "'" (apostrophe) inserted
+# infront of it or of the form ['quote', <string>]
 
 def get_text_of_quotation(exp):
+    if type(exp) == list:
+        return exp[1]
     return exp[1:]
     
                 

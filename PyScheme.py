@@ -65,7 +65,7 @@ class Procedure(object):
         
     def call(self, parameter_values, calling_environment):        
         if len(self.parameter_names) != len(parameter_values):
-            raise TypeError('Procedure has been called with ' + str(len(parameter_values))) + ' argument(s); it requires exactly ' + str(len(parameter_names)) + ' argument(s).'
+            raise TypeError(str(len(parameter_names)))
         procedure_environment = Environment(calling_environment)
         for index in range(len(self.parameter_names)):
             procedure_environment.add(self.parameter_names[index], parameter_values[index])
@@ -90,6 +90,7 @@ def evaluate_arguments(list_of_args, env):
         except:
             # directly a number represented as string
             args.append(var)
+    print 'returning ', args
     return args
 
 
@@ -176,7 +177,8 @@ def eval(exp, env = global_env):
     elif get_name(exp) in primitive_operators:
         op = get_name(exp)
         # evaluate arguments before applying operators
-        args = evaluate_arguments(get_arguments(exp), env)        
+        args = evaluate_arguments(get_arguments(exp), env)
+        print 'args =', args        
         result = apply_operators(op, args)
         return result
             
@@ -203,13 +205,17 @@ def eval(exp, env = global_env):
 #    print 'procedure_name =', procedure_name
     # evaluate arguments as before
     args = evaluate_arguments(get_arguments(exp), env)
-#    print 'args =', args
+    print 'args =', args
     # if the procedure is already defined in the environment
     # is_variable looks it up
     # otherwise, it makes a new procedure object
     # e.g. when directly lambda is used
     required_procedure_obj = eval(procedure_name)
-    return required_procedure_obj.call(args, env)
+    try:
+        return required_procedure_obj.call(args, env)
+    except TypeError as incorrect_arg_count:
+        correct_arg_count = int(incorrect_arg_count.message)
+        raise_argument_count_error(correct_arg_count, len(args), procedure_name)
     
 #def repl(prompt='PyScheme> '):
 #    "A prompt-read-eval-print loop."
@@ -246,6 +252,8 @@ def repl():
             print ''
         except EOFError:
             break
+        except Exception:
+            print ';Error in input, try again.'
         try:
             val = eval(parsed_input)
             if val != None:

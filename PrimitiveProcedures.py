@@ -7,9 +7,8 @@ Description: File to handle primitive procedures
 """
 
 primitive_operators = ['+', '-', '*', '/', '=', '<', '>', '<=', '>=',
-                       'and', 'or', 'not', 'eq?']
-
-# sorry, operations like cadddar etc. are not supported. 
+                       'and', 'or', 'not', 'eq?', 'equal?']
+ 
 primitive_list_operators = ['cons', 'car', 'cdr', 'null?', 'list?', 'list',
                             'append']
 
@@ -81,7 +80,7 @@ def expand_list_operation(list_op, args):
 #    # extra square brackets again because of get_arguments() from earlier
 #    return listname[1:]
 
-def raise_error(function_name, error_type, error_arg):
+def raise_argument_error(function_name, error_type, error_arg):
     
     """
     Raises an error of type error_type with error_arg as the object
@@ -89,7 +88,18 @@ def raise_error(function_name, error_type, error_arg):
     """
     
     raise error_type('The object ' + convert_to_scheme_expression(error_arg) + ', passed as an argument to ' + function_name + ', is not the correct type.')
-        
+    
+def raise_argument_count_error(correct_number, error_number, procedure_name):
+    
+    """
+    Raises an error of type TypeError with a message containing the 
+    input number and the required number of arguments.
+    """
+    
+    if type(procedure_name) == str:
+        raise TypeError('The procedure ' + procedure_name + ' has been called with ' + str(error_number) + ' argument(s); it requires exactly ' + str(correct_number) + ' argument(s).')
+    raise TypeError('The procedure has been called with ' + str(error_number) + ' argument(s); it requires exactly ' + str(correct_number) + ' argument(s).')    
+
 def apply_list_procedure(list_operation, args):
     
     """
@@ -104,19 +114,19 @@ def apply_list_procedure(list_operation, args):
     if list_operation == 'cons':
         # [<value>, <list_item>]
         if len(args) != 2:
-            raise TypeError('The procedure cons has been called with ' + str(len(args)) + ' argument(s); it requires exactly ' + str(len(args[0])) + ' argument(s).')
+            raise_argument_count_error(2, len(args), 'cons')
         if type(args[0]) not in (int, float, str):
-            raise_error(list_operation, TypeError, convert_to_scheme_expression(args[0]))
+            raise_argument_error(list_operation, TypeError, convert_to_scheme_expression(args[0]))
         if not type(args[1]) == list:
-            raise_error(list_operation, TypeError, convert_to_scheme_expression(args[0]))
+            raise_argument_error(list_operation, TypeError, convert_to_scheme_expression(args[0]))
         return make_list([args[0]] + args[1])
         
     elif list_operation == 'append':
         # [<list1>, <list2>]
         if not type(args[0]) == list:
-            raise_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
+            raise_argument_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
         if not type(args[1]) == list:
-            raise_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
+            raise_argument_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
         appended_lists = []
         for arg in args:
             appended_lists += arg
@@ -126,25 +136,25 @@ def apply_list_procedure(list_operation, args):
         return args
         
     if len(args) != 1:
-        raise TypeError('The procedure ' + list_operation + ' has been called with ' + str(len(args)) + ' argument(s); it requires exactly 1 argument.')
+        raise_argument_count_error(1, len(args), list_operation)
     
     if list_operation == 'list?':
         return type(args[0]) == list
         
     if type(args[0]) != list:
-            raise_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
+            raise_argument_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
         
     if list_operation == 'car':
         # [<list_item>]
         # extra parens because of the [1:] from get_arguments() 
         # earlier in PyScheme.py
         if args[0] == []:
-            raise_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
+            raise_argument_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
         return args[0][0]
         
     elif list_operation == 'cdr':
         if args[0] == []:
-            raise_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
+            raise_argument_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
         return args[0][1:]
         
     elif list_operation == 'null?':
@@ -162,7 +172,10 @@ def apply_arithmetic_operator(op, arguments):
     Output: Value after applying operator op to its arguments.
     """
     
-    running_value = op(arguments[0], arguments[1])
+    if type(arguments[0]) == int and type(arguments[1]) == int:
+        running_value = int(op(arguments[0], arguments[1]))
+    else:
+        running_value = op(arguments[0], arguments[1])
     
     if len(arguments) == 2:
         return running_value
@@ -170,7 +183,10 @@ def apply_arithmetic_operator(op, arguments):
     # else has more than two arguments, so process them
     remaining_arguments = arguments[2:]
     for argument in remaining_arguments:
-        running_value = op(running_value, argument)
+        if type(argument) == int and type(remaining_arguments) == int:
+            running_value = int(op(running_value, argument))
+        else:
+            running_value = op(running_value, argument)            
     
     return running_value
     
@@ -204,16 +220,38 @@ def apply_operators(op, arguments):
     
     import operator
     
+    # checking error in arguments
+    for arg in arguments:
+        if type(arg) not in (True, False) and op in ('and', 'or', 'not'):
+            raise_argument_error(op, TypeError, arg)
+        if type(arg) != int and op == 'modulo':
+            raise_argument_error(op, TypeError, arg)
+        if op not in ('eq?', 'and', 'or', 'not', 'modulo', 'equal?') and arg not in (int, float):
+            raise_argument_error(op, TypeError, arg)
+    
+    if op in ('modulo', 'eq?', 'equal?') and len(arguments) != 2:
+        raise_argument_count_error(2, len(arguments), op)
+        
+    
     if op == 'and':
         current_op = operator.and_
     elif op == 'or':
         current_op = operator.or_
     elif op == 'not':
+        if len(arguments) != 1:
+            raise_argument_count_error(1, len(arguments), 'not')
         return operator.not_(arguments[0])
-    
-    for arg in arguments:
-        if type(arg) not in (int, float) and op not in ('eq?', 'and', 'or', 'not'):
-            raise_error(op, TypeError, arg)
+    elif op == 'modulo':            
+        return operator.mod(arguments[0], arguments[1])
+    elif op == 'eq?':
+        if type(arguments[0]) == str and type(arguments[1]) == str:
+            return arguments[0] == arguments[1]
+        else:
+            return id(arguments[0]) == id(arguments[1])
+    elif op == 'equal?':
+        print 'arguments[0] = ', arguments[0]
+        print 'arguments[1] = ', arguments[1]
+        return str(arguments[0]) == str(arguments[1])
     
     # find the type of the operator
     if op == '+':
@@ -233,12 +271,7 @@ def apply_operators(op, arguments):
     elif op == '<=':
         current_op = operator.le
     elif op == '>=':
-        current_op = operator.ge    
-    elif op == 'eq?':
-        if type(arguments[0]) == str and type(arguments[1]) == str:
-            return arguments[0] == arguments[1]
-        else:
-            return id(arguments[0]) == id(arguments[1])
+        current_op = operator.ge
                     
     if op in ['+', '-', '*', '/']:
         return apply_arithmetic_operator(current_op, arguments)

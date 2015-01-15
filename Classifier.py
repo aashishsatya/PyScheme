@@ -41,7 +41,7 @@ def is_quoted(exp):
     Checks if an item is a quoted expression.
     """
     
-    return exp[0] == "'"
+    return exp[0] == 'quote' or exp[0] == "'"
 
 # to ease checking predicates, we will define a template function
 # which will check if the list begins with a particular keyword.
