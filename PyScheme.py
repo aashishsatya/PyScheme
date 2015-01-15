@@ -192,8 +192,9 @@ def eval(exp, env = global_env):
         # then send back to eval
 #        print 'shortened list operation invoked'
         args = evaluate_arguments(get_arguments(exp), env)
+#        print 'args =', args
         # args[0] to remove the extra parens inserted due to get_arguments()
-        expanded_expression = expand_list_operation(get_name(exp), args[0])
+        expanded_expression = expand_list_operation(get_name(exp), args)
 #        print 'expanded_expression =', expanded_expression
         return eval(expanded_expression)
               

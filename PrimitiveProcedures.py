@@ -64,7 +64,7 @@ def is_shortened_list_operation(operation_name):
 def expand_list_operation(list_op, args):
     
 #    print 'args =', args
-    
+    args = args[0]
     for index in range(len(list_op) - 2, 0, -1):
         if list_op[index] == 'a':
             args = ['car', args]
