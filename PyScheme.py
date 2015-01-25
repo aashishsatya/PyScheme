@@ -84,13 +84,9 @@ def evaluate_arguments(list_of_args, env):
     # dereference variables
     args = []
     for var in list_of_args:
-        try:
-            value = eval(var, env)
-            args.append(value)
-        except:
-            # directly a number represented as string
-            args.append(var)
-    print 'returning ', args
+        value = eval(var, env)
+        args.append(value)
+#    print 'returning ', args
     return args
 
 
@@ -176,16 +172,17 @@ def eval(exp, env = global_env):
         
     elif get_name(exp) in primitive_operators:
         op = get_name(exp)
-        # evaluate arguments before applying operators
+#         evaluate arguments before applying operators
         args = evaluate_arguments(get_arguments(exp), env)
-        print 'args =', args        
+#        print 'args =', args        
         result = apply_operators(op, args)
+#        print 'result =', result
         return result
             
     elif get_name(exp) in primitive_list_operators:
         list_operation = get_name(exp)
         args = evaluate_arguments(get_arguments(exp), env)
-#        print 'args =', args
+#        print 'list args =', args
         return apply_list_procedure(list_operation, args)
         
     # check for shortened list operation        
