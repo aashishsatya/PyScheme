@@ -100,6 +100,8 @@ def eval(exp, env = global_env):
     and returns the result
     """
     
+    print 'evaluating', str(exp), '...'
+    
     if is_self_evaluating(exp):
         return exp
         
@@ -253,12 +255,15 @@ def repl():
             break
         except Exception:
             print ';Error in input, try again.'
-        try:
-            val = eval(parsed_input)
-            if val != None:
-                print ';Value: ' + convert_to_scheme_expression(val)
-        except Exception as error:
-            print ';Error: ' + error.message
+#        try:
+#            val = eval(parsed_input)
+#            if val != None:
+#                print ';Value: ' + convert_to_scheme_expression(val)
+#        except Exception as error:
+#            print ';Error: ' + error.message
+        val = eval(parsed_input)
+        if val != None:
+            print ';Value: ' + convert_to_scheme_expression(val)
         print ''
             
 repl()
