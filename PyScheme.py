@@ -108,7 +108,7 @@ def eval(exp, env = global_env):
     
     elif is_assignment(exp):        
         variable = get_assignment_variable(exp)
-        new_value = get_assignment_new_value(exp)
+        new_value = eval(get_assignment_new_value(exp))
         previous_value = env.lookup(variable)
         env.update(variable, new_value)
         return str(previous_value)
