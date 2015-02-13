@@ -120,7 +120,7 @@ def get_consequent_from_pair(pair):
     return pair[1]
     
 # getters for quoted expressions
-# either a string with "'" (apostrophe) inserted
+# either a string with "'" (apostrophe) inserted (e.g. 'Scheme)
 # infront of it or of the form ['quote', <string>]
 
 def get_text_of_quotation(exp):
