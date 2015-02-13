@@ -65,6 +65,8 @@ class Procedure(object):
         
     def call(self, parameter_values, calling_environment):        
         if len(self.parameter_names) != len(parameter_values):
+            print 'len(parameter_names) =', len(parameter_names)
+            print 'len(parameter_values) =', len(parameter_values)
             raise TypeError(str(len(parameter_names)))
         procedure_environment = Environment(calling_environment)
         for index in range(len(self.parameter_names)):
@@ -100,7 +102,7 @@ def eval(exp, env = global_env):
     and returns the result
     """
     
-    print 'evaluating', str(exp), '...'
+#    print 'evaluating', str(exp), '...'
     
     if is_self_evaluating(exp):
         return exp
@@ -211,6 +213,7 @@ def eval(exp, env = global_env):
     # e.g. when directly lambda is used
     required_procedure_obj = eval(procedure_name)
     try:
+#        print 'req obj =', required_procedure_obj
         return required_procedure_obj.call(args, env)
     except TypeError as incorrect_arg_count:
         correct_arg_count = int(incorrect_arg_count.message)
@@ -255,15 +258,15 @@ def repl():
             break
         except Exception:
             print ';Error in input, try again.'
-#        try:
-#            val = eval(parsed_input)
-#            if val != None:
-#                print ';Value: ' + convert_to_scheme_expression(val)
-#        except Exception as error:
-#            print ';Error: ' + error.message
-        val = eval(parsed_input)
-        if val != None:
-            print ';Value: ' + convert_to_scheme_expression(val)
+        try:
+            val = eval(parsed_input)
+            if val != None:
+                print ';Value: ' + convert_to_scheme_expression(val)
+        except Exception as error:
+            print ';Error: ' + error.message
+#        val = eval(parsed_input)
+#        if val != None:
+#            print ';Value: ' + convert_to_scheme_expression(val)
         print ''
             
 repl()

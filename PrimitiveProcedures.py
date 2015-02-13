@@ -206,15 +206,15 @@ def apply_logic_operator(op, arguments):
     Output: A True or False boolean value after applying op to its arguments
     """
     
-    print 'args =', arguments
-    print 'arg1 =', arguments[0]
-    print 'arg2 =', arguments[1]
-    print 'ans =', str(arguments[0] and arguments[1])
+#    print 'args =', arguments
+#    print 'arg1 =', arguments[0]
+#    print 'arg2 =', arguments[1]
+#    print 'ans =', str(arguments[0] and arguments[1])
     running_value = op(arguments[0], arguments[1])
-    print 'error not here...'
+#    print 'error not here...'
     
     if len(arguments) == 2:
-        print 'returning', running_value
+#        print 'returning', running_value
         return running_value
         
     index = 2
@@ -234,8 +234,8 @@ def apply_operators(op, arguments):
     
     import operator
     
-    print 'op =', op
-    print 'arguments =', arguments
+#    print 'op =', op
+#    print 'arguments =', arguments
     
     # checking error in arguments
     for arg in arguments:
