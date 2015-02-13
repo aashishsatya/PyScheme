@@ -9,8 +9,8 @@ Description: In this project I attempt to write an implementation of a subset
 of the Scheme Programming Language in Python.
 """
 
-from Classifier import *
 from PrimitiveProcedures import *
+from Parser import *
 
 
 # to implement the environment model of evaluation in Scheme, 
@@ -247,6 +247,8 @@ def repl():
             if parsed_input == ['exit']:
                 break
             print ''
+        except KeyboardInterrupt:
+            break
         except EOFError:
             break
         except Exception:
