@@ -64,12 +64,12 @@ def read_from_tokens(token_list):
         while token_list[0] != ')':
             # keep appending values to the new expression list
             new_expression.append(read_from_tokens(token_list))
-        # like Mr. Norvig said, remove  the ')'
+        # remove  the ')'
         token_list.pop(0)
         return new_expression
     else:
-        # token is not the start of a new expression
-        # i.e. already in its smallest form
+        # code is here means token is not the start of a new expression
+        # i.e. it is already in its simplest form
         # so try to find the matching data type, and return
         return find_best_data_type(first_token)
         

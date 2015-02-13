@@ -51,24 +51,17 @@ def is_shortened_list_operation(operation_name):
     list operation
     """
     
-#    print 'operation_name = ', operation_name
     if operation_name[0] != 'c' or operation_name[-1] != 'r':
-#        print 'returning false, ends do not match'
         return False
         
-#    print 'checking for', operation_name[1:-1]
     for character in operation_name[1:-1]:
-#        print 'character != a: ', str(character != 'a')
-#        print 'character != d: ', str(character != 'd')
         if character != 'a' and character != 'd':
             return False
-    
-#    print 'returning true...'        
+     
     return True
     
 def expand_list_operation(list_op, args):
     
-#    print 'args =', args
     args = args[0]
     for index in range(len(list_op) - 2, 0, -1):
         if list_op[index] == 'a':
@@ -77,12 +70,6 @@ def expand_list_operation(list_op, args):
             args = ['cdr', args]
             
     return args 
-        
-    
-#def get_elements_in_list(listname):
-#    # [['list', <elem1>, <elem2>...]]
-#    # extra square brackets again because of get_arguments() from earlier
-#    return listname[1:]
 
 def raise_argument_error(function_name, error_type, error_arg):
     
@@ -110,25 +97,16 @@ def apply_list_procedure(list_operation, args):
     Applies list operations to given arguments
     """
     
-#    print 'applying list procedure'
-#    print 'list args =', args
-#    print 'list operation =', list_operation
-#    print 'type args == list? ', type(args) == list
-    
     if list_operation == 'cons':
-        # [<value>, <list_item>]
-#        print 'type(args[1]) == list:', type(args[1]) == list
         if len(args) != 2:
             raise_argument_count_error(2, len(args), 'cons')
         if type(args[0]) not in (int, float, str):
             raise_argument_error(list_operation, TypeError, convert_to_scheme_expression(args[0]))
         if not type(args[1]) == list:
-#            print 'trying to raise error...'
             raise_argument_error(list_operation, TypeError, convert_to_scheme_expression(args[1]))
         return make_list([args[0]] + args[1])
         
     elif list_operation == 'append':
-        # [<list1>, <list2>]
         if not type(args[0]) == list:
             raise_argument_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
         if not type(args[1]) == list:
@@ -164,10 +142,7 @@ def apply_list_procedure(list_operation, args):
         return args[0][1:]
         
     elif list_operation == 'null?':
-        return args[0] == []    
-        
-            
-    
+        return args[0] == []     
         
 
 def apply_arithmetic_operator(op, arguments):
@@ -178,11 +153,6 @@ def apply_arithmetic_operator(op, arguments):
     Output: Value after applying operator op to its arguments.
     """
     
-#    if type(arguments[0]) == int and type(arguments[1]) == int:
-#        running_value = int(op(arguments[0], arguments[1]))
-#    else:
-#        running_value = op(arguments[0], arguments[1])
-    
     running_value = op(arguments[0], arguments[1])
     
     if len(arguments) == 2:
@@ -191,9 +161,6 @@ def apply_arithmetic_operator(op, arguments):
     # else has more than two arguments, so process them
     remaining_arguments = arguments[2:]
     for argument in remaining_arguments:
-#        if type(argument) == int and type(remaining_arguments) == int:
-#            running_value = int(op(running_value, argument))
-#        else:
         running_value = op(running_value, argument)            
     
     return running_value
@@ -206,15 +173,9 @@ def apply_logic_operator(op, arguments):
     Output: A True or False boolean value after applying op to its arguments
     """
     
-#    print 'args =', arguments
-#    print 'arg1 =', arguments[0]
-#    print 'arg2 =', arguments[1]
-#    print 'ans =', str(arguments[0] and arguments[1])
     running_value = op(arguments[0], arguments[1])
-#    print 'error not here...'
     
     if len(arguments) == 2:
-#        print 'returning', running_value
         return running_value
         
     index = 2
@@ -233,9 +194,6 @@ def apply_operators(op, arguments):
     """
     
     import operator
-    
-#    print 'op =', op
-#    print 'arguments =', arguments
     
     # checking error in arguments
     for arg in arguments:
@@ -266,11 +224,7 @@ def apply_operators(op, arguments):
         else:
             return id(arguments[0]) == id(arguments[1])
     elif op == 'equal?':
-#        print 'arguments[0] = ', arguments[0]
-#        print 'arguments[1] = ', arguments[1]
-        if type(arguments[0]) in (int, float) and type(arguments[1]) in (int, float):
-#            print str(type(arguments[0]))
-#            print str(type(arguments[1]))                        
+        if type(arguments[0]) in (int, float) and type(arguments[1]) in (int, float):                      
             if type(arguments[1]) != type(arguments[0]):
                 return False
             else:
@@ -301,4 +255,4 @@ def apply_operators(op, arguments):
         return apply_arithmetic_operator(current_op, arguments)
         
     return apply_logic_operator(current_op, arguments)
-
+    

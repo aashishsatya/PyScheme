@@ -65,8 +65,6 @@ class Procedure(object):
         
     def call(self, parameter_values, calling_environment):        
         if len(self.parameter_names) != len(parameter_values):
-#            print 'len(parameter_names) =', len(parameter_names)
-#            print 'len(parameter_values) =', len(parameter_values)
             raise TypeError(str(len(self.parameter_names)))
         procedure_environment = Environment(calling_environment)
         for index in range(len(self.parameter_names)):
@@ -93,7 +91,6 @@ def evaluate_arguments(list_of_args, env):
             # already in simplest form, so further evaluation fails
             # so simply append
             args.append(var)
-#    print 'returning ', args
     return args
 
 
@@ -106,8 +103,6 @@ def eval(exp, env = global_env):
     Evaluates the expression exp in the given environment env
     and returns the result
     """
-    
-#    print 'evaluating', str(exp), '...'
     
     if is_self_evaluating(exp):
         return exp
@@ -160,17 +155,15 @@ def eval(exp, env = global_env):
     elif is_cond(exp):
         # condition - consequent pairs
         cond_conseq_pairs = get_cond_conseq_pairs(exp)
-#        print 'cond_conseq_pairs =', cond_conseq_pairs
         for cond_cons_pair in cond_conseq_pairs:
             condition = get_condition_from_pair(cond_cons_pair)
-#            print 'condition =', condition
             if condition == 'else' or eval(condition, env):
                 consequent = get_consequent_from_pair(cond_cons_pair)
-#                print 'consequent =', consequent
                 return eval(consequent, env)        
     
     elif is_variable(exp):
-        # may be a variable, check it
+        # exp may be a variable name
+        # so check it
         try:
             value = env.lookup(exp)
             return value
@@ -183,55 +176,38 @@ def eval(exp, env = global_env):
         op = get_name(exp)
 #         evaluate arguments before applying operators
         args = evaluate_arguments(get_arguments(exp), env)
-#        print 'args =', args        
         result = apply_operators(op, args)
-#        print 'result =', result
         return result
             
     elif get_name(exp) in primitive_list_operators:
         list_operation = get_name(exp)
         args = evaluate_arguments(get_arguments(exp), env)
-#        print 'list args =', args
         return apply_list_procedure(list_operation, args)
         
     # check for shortened list operation        
     elif  is_shortened_list_operation(get_name(exp)):
         # find and convert to corresponding expanded form
         # then send back to eval
-#        print 'shortened list operation invoked'
         args = evaluate_arguments(get_arguments(exp), env)
-#        print 'args =', args
         # args[0] to remove the extra parens inserted due to get_arguments()
         expanded_expression = expand_list_operation(get_name(exp), args)
-#        print 'expanded_expression =', expanded_expression
         return eval(expanded_expression)
               
     # item is a procedure
     procedure_name = get_name(exp)
-#    print 'procedure_name =', procedure_name
     # evaluate arguments as before
     args = evaluate_arguments(get_arguments(exp), env)
-#    print 'args =', args
     # if the procedure is already defined in the environment
     # is_variable looks it up
     # otherwise, it makes a new procedure object
     # e.g. when directly lambda is used
     required_procedure_obj = eval(procedure_name)
     try:
-#        print 'req obj =', required_procedure_obj
         return required_procedure_obj.call(args, env)
     except TypeError as incorrect_arg_count:
         correct_arg_count = int(incorrect_arg_count.message)
         raise_argument_count_error(correct_arg_count, len(args), procedure_name)
     
-#def repl(prompt='PyScheme> '):
-#    "A prompt-read-eval-print loop."
-#    while True:
-#        val = eval(parse(raw_input(prompt)))
-#        if val != None:
-#            print val
-
- 
 def repl():
     
     "A prompt-read-eval-print loop."
@@ -269,9 +245,6 @@ def repl():
                 print ';Value: ' + convert_to_scheme_expression(val)
         except Exception as error:
             print ';Error: ' + error.message
-#        val = eval(parsed_input)
-#        if val != None:
-#            print ';Value: ' + convert_to_scheme_expression(val)
         print ''
             
 repl()
