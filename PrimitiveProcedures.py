@@ -6,6 +6,12 @@ Created on Sun Dec 28 20:16:29 2014
 Description: File to handle primitive procedures
 """
 
+# Classifier.py finds the type of Scheme expression 
+# that was given as input
+from Classifier import *
+# selectors for the given Scheme expression
+from Selectors import *
+
 primitive_operators = ['+', '-', '*', '/', '=', '<', '>', '<=', '>=',
                        'and', 'or', 'not', 'eq?', 'equal?']
  
@@ -70,9 +76,7 @@ def expand_list_operation(list_op, args):
         elif list_op[index] == 'd':
             args = ['cdr', args]
             
-    return args
-        
-    
+    return args 
         
     
 #def get_elements_in_list(listname):
@@ -202,9 +206,15 @@ def apply_logic_operator(op, arguments):
     Output: A True or False boolean value after applying op to its arguments
     """
     
+    print 'args =', arguments
+    print 'arg1 =', arguments[0]
+    print 'arg2 =', arguments[1]
+    print 'ans =', str(arguments[0] and arguments[1])
     running_value = op(arguments[0], arguments[1])
+    print 'error not here...'
     
     if len(arguments) == 2:
+        print 'returning', running_value
         return running_value
         
     index = 2
@@ -224,11 +234,12 @@ def apply_operators(op, arguments):
     
     import operator
     
-#    print 'arguments =', arguments
+    print 'op =', op
+    print 'arguments =', arguments
     
     # checking error in arguments
     for arg in arguments:
-        if type(arg) not in (True, False) and op in ('and', 'or', 'not'):
+        if arg not in (True, False) and op in ('and', 'or', 'not'):
             raise_argument_error(op, TypeError, arg)
         if type(arg) != int and op == 'modulo':
             raise_argument_error(op, TypeError, arg)
