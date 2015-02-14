@@ -207,6 +207,35 @@ def eval(exp, env = global_env):
     except TypeError as incorrect_arg_count:
         correct_arg_count = int(incorrect_arg_count.message)
         raise_argument_count_error(correct_arg_count, len(args), procedure_name)
+
+def print_help_message():
+
+    """
+    Prints a help message for the user to navigate through the program.
+    """
+    
+    print ''
+    print 'Help for navigating through PyScheme:'
+    print ''
+    print 'Note: Procedures work the same way they do in Scheme, unless noted otherwise.'
+    print ''    
+    print 'List of supported procedures:'
+    print ' - define, for both variable and function definitions'
+    print ' - lambda'
+    print ' - if (must have an <alternative> condition)'
+    print ' - cond (else is also supported)'
+    print ' - set!, for assignnment'
+    print ' - quote, for symbolic notation'
+    print ' - begin, for sequential execution'
+    print ' - primitive list operators: list, append, car, cdr, list?, null?'
+    print ' - shortened list operators such as car, caddr, caar etc.'
+    print ' - primitive operators: +, -, *, /, modulo (division does not give fraction though)'
+    print ' - logical operators: and, or, not'
+    print ' - operators for comparison: >, <, <=, >=, ='
+    print ' - operators for equality comparison: eq?, equal?'
+    print ''
+    print 'In case of any bugs in the above procedures kindly report to ankarathaashish@gmail.com'
+    print ''
     
 def repl():
     
@@ -214,7 +243,7 @@ def repl():
     
     print ''
     print 'PyScheme: A Scheme-like interpreter written in Python by Aashish Satyajith.'
-    print 'Note: Interpreter does not support all Scheme operations, see README.'
+    print "Note: Interpreter does not support all Scheme operations, see README or enter '(help)'."
     print "Enter '(exit)' (without quotes) or Ctrl-D to exit."
     print ''
     
@@ -232,6 +261,9 @@ def repl():
             parsed_input = parse(input_str)
             if parsed_input == ['exit']:
                 break
+            if parsed_input == ['help']:
+                print_help_message()
+                continue
             print ''
         except KeyboardInterrupt:
             break
