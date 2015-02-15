@@ -71,8 +71,6 @@ class Procedure(object):
             procedure_environment.add(self.parameter_names[index], parameter_values[index])
         return eval(self.body, procedure_environment)
         
-
-    
 def evaluate_arguments(list_of_args, env):
     
     """
@@ -185,7 +183,7 @@ def eval(exp, env = global_env):
         try:
             value = env.lookup(exp)
             return value
-        except AttributeError:
+        except:
             raise NameError("Unbound variable: " + exp)
         
     # the PrimitiveProcedures file takes care of this part

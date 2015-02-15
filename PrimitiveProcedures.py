@@ -100,8 +100,6 @@ def apply_list_procedure(list_operation, args):
     if list_operation == 'cons':
         if len(args) != 2:
             raise_argument_count_error(2, len(args), 'cons')
-        if type(args[0]) not in (int, float, str):
-            raise_argument_error(list_operation, TypeError, convert_to_scheme_expression(args[0]))
         if not type(args[1]) == list:
             raise_argument_error(list_operation, TypeError, convert_to_scheme_expression(args[1]))
         return make_list([args[0]] + args[1])
@@ -205,8 +203,7 @@ def apply_operators(op, arguments):
             raise_argument_error(op, TypeError, arg)
     
     if op in ('modulo', 'eq?', 'equal?') and len(arguments) != 2:
-        raise_argument_count_error(2, len(arguments), op)
-        
+        raise_argument_count_error(2, len(arguments), op)       
     
     if op == 'and':
         current_op = operator.and_
