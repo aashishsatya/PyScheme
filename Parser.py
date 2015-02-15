@@ -41,8 +41,6 @@ def parse(program):
     as mentioned above.
     """
     
-    # assumes the programmer to be correct
-    
     return read_from_tokens(tokenize(program))
     
 def read_from_tokens(token_list):    
@@ -52,8 +50,7 @@ def read_from_tokens(token_list):
     them as a list
     """
     
-    # this is implemented as a separate function for the recursion to work
-    # properly
+    # this is implemented as a separate function for the recursion to work properly
     
     first_token = token_list.pop(0)
     

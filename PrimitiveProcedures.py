@@ -3,7 +3,8 @@ Created on Sun Dec 28 20:16:29 2014
 
 @author: aashishsatya
 
-Description: File to handle primitive procedures
+Description: Script that handles primitive procedures
+
 """
 
 # Classifier.py finds the type of Scheme expression 
@@ -62,6 +63,16 @@ def is_shortened_list_operation(operation_name):
     
 def expand_list_operation(list_op, args):
     
+    """
+    Converts a shortened list operation to its expanded form.
+    This is done because the program can only work on expanded forms of
+    list operations.
+    Input: A list operation in its short form and the arguments
+    Output: Expanded form of the list operation along with the arguments.
+    """
+    
+    # args[0] because internal representation will be of the form
+    # [[<elem1>, <elem2>, ...]] <= notice the double parens
     args = args[0]
     for index in range(len(list_op) - 2, 0, -1):
         if list_op[index] == 'a':
@@ -89,6 +100,7 @@ def raise_argument_count_error(correct_number, error_number, procedure_name):
     
     if type(procedure_name) == str:
         raise TypeError('The procedure ' + procedure_name + ' has been called with ' + str(error_number) + ' argument(s); it requires exactly ' + str(correct_number) + ' argument(s).')
+    # in case lambdas are being directly used (then they don't have a name)
     raise TypeError('The procedure has been called with ' + str(error_number) + ' argument(s); it requires exactly ' + str(correct_number) + ' argument(s).')    
 
 def apply_list_procedure(list_operation, args):
@@ -128,8 +140,8 @@ def apply_list_procedure(list_operation, args):
         
     if list_operation == 'car':
         # [<list_item>]
-        # extra parens because of the [1:] from get_arguments() 
-        # earlier in PyScheme.py
+        # extra parens because of the [1:] from get_arguments() earlier in PyScheme.py
+        # same goes for cdr and null? as well
         if args[0] == []:
             raise_argument_error(list_operation, ValueError, convert_to_scheme_expression(args[0]))
         return args[0][0]
@@ -156,7 +168,7 @@ def apply_arithmetic_operator(op, arguments):
     if len(arguments) == 2:
         return running_value
         
-    # else has more than two arguments, so process them
+    # has more than two arguments, so process them
     remaining_arguments = arguments[2:]
     for argument in remaining_arguments:
         running_value = op(running_value, argument)            

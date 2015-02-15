@@ -5,16 +5,14 @@ Created on Sun Dec 21 23:53:09 2014
 
 Project Name: PyScheme
 
-Description: In this project I attempt to write an implementation of a subset
-of the Scheme Programming Language in Python.
+Description: The main script file.
 """
 
 from PrimitiveProcedures import *
 from Parser import *
 
 
-# to implement the environment model of evaluation in Scheme, 
-# we need environments. 
+# to implement the environment model of evaluation in Scheme
 class Environment(object):
     
     """
@@ -25,11 +23,14 @@ class Environment(object):
     def __init__(self, enclosing_environment = None):
         self.frame = {}
         self.enclosing_environment = enclosing_environment
-        
+    
+    # checks if the variable is defined in the current environment
     def lookup(self, variable):
         if variable in self.frame.keys():
             return self.frame[variable]
         else:
+            # not defined in current environment
+            # so look in the enclosing environment
             return self.enclosing_environment.lookup(variable)
     
     def update(self, variable, new_value):
@@ -56,7 +57,7 @@ global_env.add('#f', False)
 class Procedure(object):
     
     """
-    A class to model procedures. Stores variables and body of a procedure
+    A class to model procedures. Stores variables and body of a procedure.
     """
     
     def __init__(self, parameter_names, body):
@@ -65,14 +66,17 @@ class Procedure(object):
         
     def call(self, parameter_values, calling_environment):        
         if len(self.parameter_names) != len(parameter_values):
+            # incorrect number of parameters, so raise error
             raise TypeError(str(len(self.parameter_names)))
+        # create a new environment for the procedure, with the
+        # environment that called the function as its enclosing environment
         procedure_environment = Environment(calling_environment)
         for index in range(len(self.parameter_names)):
             procedure_environment.add(self.parameter_names[index], parameter_values[index])
+        # then simply evaluate the procedure in the new environment
         return eval(self.body, procedure_environment)
-        
-
-    
+  
+   
 def evaluate_arguments(list_of_args, env):
     
     """
@@ -93,9 +97,8 @@ def evaluate_arguments(list_of_args, env):
             args.append(var)
     return args
 
-
 # functions use setters and getters to implement data abstraction
-# if you need details of the implementation see Housekeeping.py
+# see Selectors.py for details
     
 def eval(exp, env = global_env):
     
@@ -118,8 +121,7 @@ def eval(exp, env = global_env):
         return str(previous_value)
         
     elif is_let(exp):
-        # let is nothing but syntactic sugar for underlying lambda
-        # expression:
+        # let is nothing but syntactic sugar for underlying lambda expression:
         # (let ((var1 exp1) (var2 exp2) ... (varn expn)) body)
         # is ((lambda (var1 var2 ... varn) body) exp1 exp2 ... expn)
         # so we get lambda variables and expressions first
@@ -166,12 +168,13 @@ def eval(exp, env = global_env):
         return Procedure(params, body)
         
     elif is_begin(exp):
-        # all we need to do is evaluate the arguments
+        # all we need to do is evaluate the arguments one by one
         args = evaluate_arguments(get_begin_statements(exp), env)
+        # return value of last expression evaluated
         return args[-1]
         
     elif is_cond(exp):
-        # condition - consequent pairs
+        # get condition - consequent pairs
         cond_conseq_pairs = get_cond_conseq_pairs(exp)
         for cond_cons_pair in cond_conseq_pairs:
             condition = get_condition_from_pair(cond_cons_pair)
@@ -192,7 +195,7 @@ def eval(exp, env = global_env):
         
     elif get_name(exp) in primitive_operators:
         op = get_name(exp)
-#         evaluate arguments before applying operators
+        # evaluate arguments before applying operators
         args = evaluate_arguments(get_arguments(exp), env)
         result = apply_operators(op, args)
         return result
@@ -202,13 +205,12 @@ def eval(exp, env = global_env):
         args = evaluate_arguments(get_arguments(exp), env)
         return apply_list_procedure(list_operation, args)
         
-    # check for shortened list operation        
+    # check for shortened list operation such as caar, caddr etc
     elif  is_shortened_list_operation(get_name(exp)):
-        # find and convert to corresponding expanded form
-        # then send back to eval
         args = evaluate_arguments(get_arguments(exp), env)
-        # args[0] to remove the extra parens inserted due to get_arguments()
+        # find and convert to corresponding expanded form
         expanded_expression = expand_list_operation(get_name(exp), args)
+        # then send back to eval
         return eval(expanded_expression)
               
     # item is a procedure
@@ -219,6 +221,7 @@ def eval(exp, env = global_env):
     # is_variable looks it up
     # otherwise, it makes a new procedure object
     # e.g. when directly lambda is used
+    # this is why we're "evaluating" the procedure's name
     required_procedure_obj = eval(procedure_name)
     try:
         return required_procedure_obj.call(args, env)
@@ -242,7 +245,8 @@ def print_help_message():
     print ' - lambda'
     print ' - if (must have an <alternative> condition)'
     print ' - cond (else is also supported)'
-    print ' - set!, for assignnment'
+    print ' - set!, for assignment'
+    print ' - let, for temporary assignment'
     print ' - quote, for symbolic notation'
     print ' - begin, for sequential execution'
     print ' - primitive list operators: list, append, car, cdr, list?, null?'
@@ -252,7 +256,7 @@ def print_help_message():
     print ' - operators for comparison: >, <, <=, >=, ='
     print ' - operators for equality comparison: eq?, equal?'
     print ''
-    print 'In case of any bugs in the above procedures kindly report to ankarathaashish@gmail.com'
+    print 'In case of any bugs in the above procedures kindly report to ankarathaashish@gmail.com.'
     print ''
     
 def repl():
@@ -261,7 +265,7 @@ def repl():
     
     print ''
     print 'PyScheme: A Scheme-like interpreter written in Python by Aashish Satyajith.'
-    print "Note: Interpreter does not support all Scheme operations, see README or enter '(help)'."
+    print "Note: Interpreter does not support all Scheme operations, enter '(help)' for more details."
     print "Enter '(exit)' (without quotes) or Ctrl-D to exit."
     print ''
     
@@ -271,22 +275,30 @@ def repl():
             if len(input_str) == 0 or input_str.isspace() or input_str.lstrip()[0] == ';':
                 # whitelines and comments, continue
                 continue
+            # to enable input on several different lines
+            # input stops if number of left parens matches the number of right parens
+            # otherwise it keeps accepting input
             while input_str.count('(') != input_str.count(')'):
                 temp_input = raw_input()
                 if len(temp_input) == 0 or temp_input.isspace() or temp_input.lstrip()[0] == ';':
                     continue
                 input_str += ' ' + temp_input
             parsed_input = parse(input_str)
+            # user gave (exit) as the input
             if parsed_input == ['exit']:
                 break
+            # (help) was the input
             if parsed_input == ['help']:
                 print_help_message()
                 continue
             print ''
+        # to deal with Ctrl-C
         except KeyboardInterrupt:
             break
+        # to deal with Ctrl-D
         except EOFError:
             break
+        # deal with any other error that might cause REPL to terminate
         except Exception:
             print ';Error in input, try again.'
         try:
@@ -298,6 +310,7 @@ def repl():
         print ''
             
 repl()
+# blatantly copied from Scheme
 print ''
 print 'End of input stream reached.'
 print 'Moriturus te saluto.'

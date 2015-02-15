@@ -4,7 +4,9 @@ Created on Mon Dec 22 21:10:34 2014
 @author: aashishsatya
 
 Description: Python code that classifies a given statement for eval.
-Kind of like a header file in C or C++.
+It identifies the type of expression so that eval can proceed with
+processing it further.
+
 """
 
 from Housekeeping import *
@@ -134,7 +136,3 @@ def is_application(exp):
             return False
     except:
         return False
-
-    
-    
-
