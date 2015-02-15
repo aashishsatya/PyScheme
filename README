@@ -1,10 +1,25 @@
 PyScheme:
 ---------
 
-NOTE: PROJECT IN ACTIVE DEVELOPMENT. MIGHT NOT WORK AS ADVERTISED.
-
 In this project I try to implement a subset of the Scheme Programming Language in Python. This is a recommended excercise in Structure and Interpretation of Computer Programs by Abelson et. al. The question originally asks for an implementation in C, but I like Python a lot, so I went with it. 
 
 Actually speaking, a Python implementation of Lisp has already been published by the computer science extraordinaire, Peter Norvig. His articles (namely "(How to Write a (Lisp) Interpreter (in Python))" and "(An ((Even Better) Lisp) Interpreter (in Python))") have been great references.
 
 I'm also planning to use this project to brush up my Git skills, so you'll find a lot of unnecessary branches here and there. Thank you for your patience!!
+
+Running the program:
+--------------------
+
+Simply download all the files and run the PyScheme.py script file. You should be good to go.
+
+Getting help with the program:
+------------------------------
+
+This program assumes that you have atleast beginner-level experience working with Scheme. You can get a list of all supported options by executing the command '(help)' in the PyScheme prompt.
+
+Reporting errors:
+-----------------
+
+Invariably, there will be bugs in my software. Many features may have been left out on purpose (oh come on, implementing the whole thing would have been a futile exercise), but some of them may be my fault as well. In any case, do report to me should you identify them. You can reach me at ankarathaashish@gmail.com.
+
+
