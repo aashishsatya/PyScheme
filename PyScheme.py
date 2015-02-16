@@ -266,7 +266,7 @@ def repl():
     print ''
     print 'PyScheme: A Scheme-like interpreter written in Python by Aashish Satyajith.'
     print "Note: Interpreter does not support all Scheme operations, enter '(help)' for more details."
-    print "Enter '(exit)' (without quotes) or Ctrl-D to exit."
+    print "Enter '(exit)' (without quotes) to exit."
     print ''
     
     while True:
