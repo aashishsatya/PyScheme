@@ -189,6 +189,7 @@ def eval(exp, env = global_env):
             value = env.lookup(exp)
             return value
         except AttributeError:
+            print 'attrerror raised on', exp
             raise NameError("Unbound variable: " + exp)
         
     # the PrimitiveProcedures file takes care of this part
@@ -196,7 +197,12 @@ def eval(exp, env = global_env):
     elif get_name(exp) in primitive_operators:
         op = get_name(exp)
         # evaluate arguments before applying operators
-        args = evaluate_arguments(get_arguments(exp), env)
+        try:
+            args = evaluate_arguments(get_arguments(exp), env)
+        except Exception as ub_vbl_err:
+            print 'caught name error'
+            raise NameError(ub_vbl_err.message)
+            return
         result = apply_operators(op, args)
         return result
             
